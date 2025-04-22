@@ -1,0 +1,674 @@
+Prompt detallado para desarrollar el Backend en Flask para Control Fresco
+Objetivo principal
+Desarrollar un backend completo en Flask para la aplicación de gestión financiera "Control Fresco" que se integrará con el frontend existente en React/TypeScript. El sistema debe gestionar clientes, proyectos, pagos, gastos, ingresos y generar análisis financieros.
+Tecnología requerida (específica)
+
+Framework y lenguaje:
+
+Python 3.9 o superior
+Flask 2.0 o superior
+Flask Blueprints para organizar rutas
+
+
+Base de datos:
+
+PostgreSQL 13 o superior
+SQLAlchemy 1.4 o superior como ORM
+Flask-Migrate para manejar migraciones de base de datos
+Alembic para la versión de esquemas
+
+
+Autenticación:
+
+Flask-JWT-Extended para manejo de tokens JWT
+Almacenamiento seguro de contraseñas con bcrypt
+Roles y permisos basados en Claims JWT
+
+
+Validación de datos:
+
+Marshmallow para serialización/deserialización y validación
+Pydantic como alternativa para la validación de esquemas
+
+
+Documentación:
+
+Flask-RESTx o Swagger-UI para documentación OpenAPI
+Docstrings en formato Google o NumPy para el código
+
+
+Testing:
+
+Pytest para pruebas unitarias y de integración
+Coverage para medir cobertura de código
+Factory Boy para crear objetos de prueba
+
+
+Infraestructura:
+
+Configuración para Docker y docker-compose
+Configuración separada para desarrollo, pruebas y producción
+Variables de entorno mediante python-dotenv
+
+
+
+Modelos de datos (detallados)
+Implementa los siguientes modelos con SQLAlchemy:
+
+Usuario (users):
+
+id (Integer, PK)
+username (String, único, no nulo)
+email (String, único, no nulo)
+password_hash (String, no nulo)
+role (String, no nulo, default='user')
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+Cliente (clients):
+
+id (Integer, PK)
+name (String, no nulo)
+contact_name (String, nullable)
+email (String, nullable)
+phone (String, nullable)
+address (String, nullable)
+tax_id (String, nullable) - NIT/ID tributario
+start_date (Date, no nulo)
+status (Enum: 'Activo', 'Pausado', 'Terminado', default='Activo')
+notes (Text, nullable)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+Relaciones:
+
+projects (One-to-Many a Projects)
+documents (One-to-Many a Documents)
+
+
+
+
+Proyecto (projects):
+
+id (Integer, PK)
+client_id (Integer, FK a clients.id, no nulo)
+name (String, no nulo)
+description (Text, no nulo)
+start_date (Date, no nulo)
+end_date (Date, nullable)
+status (Enum: 'Activo', 'Pausado', 'Finalizado', 'Cancelado', default='Activo')
+notes (Text, nullable)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+Relaciones:
+
+client (Many-to-One a Clients)
+payment_plan (One-to-One a PaymentPlans)
+payments (One-to-Many a Payments)
+documents (One-to-Many a Documents)
+
+
+
+
+Plan de Pago (payment_plans):
+
+id (Integer, PK)
+project_id (Integer, FK a projects.id, único, no nulo)
+type (Enum: 'Fee único', 'Fee por cuotas', 'Suscripción periódica', 'Mixto', no nulo)
+implementation_fee_total (Numeric(12,2), nullable)
+implementation_fee_currency (Enum: 'COP', 'USD', nullable)
+implementation_fee_installments (Integer, nullable, default=1)
+recurring_fee_amount (Numeric(12,2), nullable)
+recurring_fee_currency (Enum: 'COP', 'USD', nullable)
+recurring_fee_frequency (Enum: 'Semanal', 'Quincenal', 'Mensual', 'Bimensual', 'Trimestral', 'Semestral', 'Anual', nullable)
+recurring_fee_day_of_charge (Integer, nullable)
+recurring_fee_grace_periods (Integer, nullable, default=0)
+recurring_fee_discount_periods (Integer, nullable, default=0)
+recurring_fee_discount_percentage (Numeric(5,2), nullable, default=0)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+Pago (payments):
+
+id (Integer, PK)
+project_id (Integer, FK a projects.id, no nulo)
+client_id (Integer, FK a clients.id, no nulo)
+amount (Numeric(12,2), no nulo)
+currency (Enum: 'COP', 'USD', no nulo)
+date (Date, no nulo) - Fecha programada
+paid_date (Date, nullable) - Fecha real de pago
+status (Enum: 'Pagado', 'Pendiente', 'Vencido', default='Pendiente')
+invoice_number (String, nullable)
+invoice_url (String, nullable)
+type (Enum: 'Implementación', 'Recurrente', no nulo)
+installment_number (Integer, nullable)
+notes (Text, nullable)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+Documento (documents):
+
+id (Integer, PK)
+entity_type (Enum: 'client', 'project', no nulo)
+entity_id (Integer, no nulo)
+name (String, no nulo)
+type (Enum: 'RUT', 'Cámara de Comercio', 'NDA', 'Contrato', 'Factura', 'Otro', no nulo)
+file_path (String, no nulo)
+upload_date (DateTime, no nulo)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+Ingreso (incomes):
+
+id (Integer, PK)
+description (String, no nulo)
+date (Date, no nulo)
+amount (Numeric(12,2), no nulo)
+currency (Enum: 'COP', 'USD', no nulo)
+type (String, no nulo) - 'Cliente', 'Aporte de socio', etc.
+client (String, nullable)
+payment_method (String, no nulo)
+receipt_path (String, nullable)
+notes (Text, nullable)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+Gasto (expenses):
+
+id (Integer, PK)
+description (String, no nulo)
+date (Date, no nulo)
+amount (Numeric(12,2), no nulo)
+currency (Enum: 'COP', 'USD', no nulo)
+category (String, no nulo)
+payment_method (String, no nulo)
+receipt_path (String, nullable)
+notes (Text, nullable)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+Gasto Recurrente (recurring_expenses):
+
+id (Integer, PK)
+description (String, no nulo)
+frequency (Enum: 'Diaria', 'Semanal', 'Quincenal', 'Mensual', 'Bimensual', 'Trimestral', 'Semestral', 'Anual', no nulo)
+start_date (Date, no nulo)
+amount (Numeric(12,2), no nulo)
+currency (Enum: 'COP', 'USD', no nulo)
+category (String, no nulo)
+payment_method (String, no nulo)
+status (Enum: 'Activo', 'Pausado', default='Activo')
+next_payment (Date, no nulo)
+notes (Text, nullable)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+Gasto Causado (accrued_expenses):
+
+id (Integer, PK)
+description (String, no nulo)
+due_date (Date, no nulo)
+amount (Numeric(12,2), no nulo)
+currency (Enum: 'COP', 'USD', no nulo)
+category (String, no nulo)
+payment_method (String, no nulo)
+status (Enum: 'pagado', 'pendiente', 'vencido', default='pendiente')
+receipt_path (String, nullable)
+is_recurring (Boolean, default=False)
+recurring_id (Integer, FK a recurring_expenses.id, nullable)
+notes (Text, nullable)
+created_at (DateTime, no nulo)
+updated_at (DateTime, no nulo)
+
+
+
+API Endpoints (descripción detallada)
+Autenticación
+
+POST /api/auth/login
+
+Cuerpo: {"username": string, "password": string}
+Respuesta: {"access_token": string, "refresh_token": string, "user": object}
+Códigos: 200 (éxito), 401 (credenciales inválidas)
+
+
+POST /api/auth/refresh
+
+Headers: {"Authorization": "Bearer refresh_token"}
+Respuesta: {"access_token": string}
+Códigos: 200 (éxito), 401 (token inválido)
+
+
+POST /api/auth/logout
+
+Headers: {"Authorization": "Bearer token"}
+Respuesta: {"message": "Logout successful"}
+Códigos: 200 (éxito), 401 (token inválido)
+
+
+
+Clientes
+
+GET /api/clients
+
+Parámetros query: status (opcional), sort (opcional), page (opcional), per_page (opcional)
+Respuesta: {"data": [client objects], "pagination": object}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/clients/{id}
+
+Respuesta: {"data": client object}
+Códigos: 200 (éxito), 404 (no encontrado), 401 (no autorizado)
+
+
+POST /api/clients
+
+Cuerpo: Objeto cliente (ver modelo)
+Respuesta: {"data": created client object}
+Códigos: 201 (creado), 400 (validación fallida), 401 (no autorizado)
+
+
+PUT /api/clients/{id}
+
+Cuerpo: Objeto cliente (ver modelo)
+Respuesta: {"data": updated client object}
+Códigos: 200 (éxito), 404 (no encontrado), 400 (validación fallida), 401 (no autorizado)
+
+
+DELETE /api/clients/{id}
+
+Respuesta: {"message": "Client deleted"}
+Códigos: 200 (éxito), 404 (no encontrado), 401 (no autorizado), 409 (conflicto - cliente tiene proyectos)
+
+
+GET /api/clients/{id}/documents
+
+Respuesta: {"data": [document objects]}
+Códigos: 200 (éxito), 404 (cliente no encontrado), 401 (no autorizado)
+
+
+POST /api/clients/{id}/documents
+
+Cuerpo: Multipart form con name, type, file
+Respuesta: {"data": created document object}
+Códigos: 201 (creado), 400 (validación fallida), 404 (cliente no encontrado), 401 (no autorizado)
+
+
+
+Proyectos
+
+GET /api/projects
+
+Parámetros query: client_id (opcional), status (opcional), sort (opcional), page (opcional), per_page (opcional)
+Respuesta: {"data": [project objects], "pagination": object}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/projects/{id}
+
+Respuesta: {"data": project object with payment plan}
+Códigos: 200 (éxito), 404 (no encontrado), 401 (no autorizado)
+
+
+POST /api/projects
+
+Cuerpo: Objeto proyecto con plan de pago (ver modelo)
+Respuesta: {"data": created project object}
+Códigos: 201 (creado), 400 (validación fallida), 404 (cliente no encontrado), 401 (no autorizado)
+
+
+PUT /api/projects/{id}
+
+Cuerpo: Objeto proyecto (ver modelo)
+Respuesta: {"data": updated project object}
+Códigos: 200 (éxito), 404 (no encontrado), 400 (validación fallida), 401 (no autorizado)
+
+
+GET /api/projects/{id}/documents
+
+Respuesta: {"data": [document objects]}
+Códigos: 200 (éxito), 404 (proyecto no encontrado), 401 (no autorizado)
+
+
+POST /api/projects/{id}/documents
+
+Cuerpo: Multipart form con name, type, file
+Respuesta: {"data": created document object}
+Códigos: 201 (creado), 400 (validación fallida), 404 (proyecto no encontrado), 401 (no autorizado)
+
+
+
+Pagos
+
+GET /api/payments
+
+Parámetros query: project_id (opcional), client_id (opcional), status (opcional), date_from (opcional), date_to (opcional), currency (opcional, para conversión), sort (opcional), page (opcional), per_page (opcional)
+Respuesta: {"data": [payment objects], "pagination": object, "totals": {pagado, pendiente, vencido}}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+POST /api/payments
+
+Cuerpo: Objeto pago (ver modelo)
+Respuesta: {"data": created payment object}
+Códigos: 201 (creado), 400 (validación fallida), 404 (proyecto/cliente no encontrado), 401 (no autorizado)
+
+
+PUT /api/payments/{id}
+
+Cuerpo: Objeto pago (ver modelo)
+Respuesta: {"data": updated payment object}
+Códigos: 200 (éxito), 404 (no encontrado), 400 (validación fallida), 401 (no autorizado)
+
+
+PATCH /api/payments/{id}/status
+
+Cuerpo: {"status": "Pagado", "paid_date": "2023-07-01", "invoice_number": "FV-2023-001" (opcional)}
+Respuesta: {"data": updated payment object}
+Códigos: 200 (éxito), 404 (no encontrado), 400 (validación fallida), 401 (no autorizado)
+
+
+GET /api/payments/overdue
+
+Parámetros query: currency (opcional, para conversión)
+Respuesta: {"data": [payment objects], "total": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/payments/upcoming
+
+Parámetros query: days (opcional, default=30), currency (opcional, para conversión)
+Respuesta: {"data": [payment objects], "total": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+POST /api/payments/generate
+
+Cuerpo: {"project_id": number, "months": number (opcional, default=12)}
+Respuesta: {"data": [generated payment objects], "message": "X payments generated"}
+Códigos: 201 (creado), 400 (validación fallida), 404 (proyecto no encontrado), 401 (no autorizado)
+
+
+
+Ingresos
+
+GET /api/incomes
+
+Parámetros query: type (opcional), date_from (opcional), date_to (opcional), currency (opcional, para conversión), sort (opcional), page (opcional), per_page (opcional)
+Respuesta: {"data": [income objects], "pagination": object, "total": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+POST /api/incomes
+
+Cuerpo: Multipart form con datos del ingreso y opcionalmente un archivo receipt
+Respuesta: {"data": created income object}
+Códigos: 201 (creado), 400 (validación fallida), 401 (no autorizado)
+
+
+PUT /api/incomes/{id}
+
+Cuerpo: Objeto ingreso (ver modelo)
+Respuesta: {"data": updated income object}
+Códigos: 200 (éxito), 404 (no encontrado), 400 (validación fallida), 401 (no autorizado)
+
+
+DELETE /api/incomes/{id}
+
+Respuesta: {"message": "Income deleted"}
+Códigos: 200 (éxito), 404 (no encontrado), 401 (no autorizado)
+
+
+GET /api/incomes/analysis
+
+Parámetros query: period (opcional: month, quarter, year), currency (opcional, para conversión)
+Respuesta: {"monthly_data": [], "client_data": [], "total_month": numeric, "avg_month": numeric, "client_income": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+
+Gastos
+
+GET /api/expenses
+
+Parámetros query: category (opcional), date_from (opcional), date_to (opcional), currency (opcional, para conversión), sort (opcional), page (opcional), per_page (opcional)
+Respuesta: {"data": [expense objects], "pagination": object, "total": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/expenses/recurring
+
+Parámetros query: status (opcional), category (opcional), currency (opcional, para conversión), sort (opcional), page (opcional), per_page (opcional)
+Respuesta: {"data": [recurring expense objects], "pagination": object, "total": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/expenses/accrued
+
+Parámetros query: status (opcional), period (opcional: month, quarter, year, custom), date_from (opcional), date_to (opcional), currency (opcional), sort (opcional), page (opcional), per_page (opcional)
+Respuesta: {"data": [accrued expense objects], "pagination": object, "totals": {by_category, by_currency}}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+POST /api/expenses
+
+Cuerpo: Multipart form con datos del gasto y opcionalmente un archivo receipt
+Respuesta: {"data": created expense object}
+Códigos: 201 (creado), 400 (validación fallida), 401 (no autorizado)
+
+
+POST /api/expenses/recurring
+
+Cuerpo: Objeto gasto recurrente (ver modelo)
+Respuesta: {"data": created recurring expense object}
+Códigos: 201 (creado), 400 (validación fallida), 401 (no autorizado)
+
+
+PATCH /api/expenses/recurring/{id}/status
+
+Cuerpo: {"status": "Activo" o "Pausado"}
+Respuesta: {"data": updated recurring expense object}
+Códigos: 200 (éxito), 404 (no encontrado), 400 (validación fallida), 401 (no autorizado)
+
+
+POST /api/expenses/accrued/{id}/mark-as-paid
+
+Cuerpo: {"payment_date": date, "payment_method": string, "receipt": File (opcional)}
+Respuesta: {"data": updated accrued expense object}
+Códigos: 200 (éxito), 404 (no encontrado), 400 (validación fallida), 401 (no autorizado)
+
+
+GET /api/expenses/preview-recurring
+
+Parámetros query: start_date, frequency, amount, currency, count (opcional, default=12)
+Respuesta: {"data": [payment preview objects]}
+Códigos: 200 (éxito), 400 (validación fallida), 401 (no autorizado)
+
+
+GET /api/expenses/analysis
+
+Parámetros query: period (opcional: month, quarter, year), currency (opcional, para conversión)
+Respuesta: {"category_data": [], "monthly_data": [], "total_variable": numeric, "total_recurring": numeric, "category_totals": object}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+
+Flujo de Caja
+
+GET /api/cashflow
+
+Parámetros query: date_from (opcional), date_to (opcional), type (opcional), category (opcional), currency (opcional, para conversión)
+Respuesta: {"data": [cashflow movement objects], "balance": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/cashflow/metrics
+
+Parámetros query: currency (opcional, para conversión)
+Respuesta: {"total_income": numeric, "total_expenses": numeric, "current_balance": numeric, "avg_monthly_income": numeric, "avg_monthly_expenses": numeric, "runway": numeric, "break_even_date": date}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/cashflow/analysis
+
+Parámetros query: period (opcional: month, quarter, year), currency (opcional, para conversión)
+Respuesta: {"monthly_data": [], "category_expenses": [], "client_income": []}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+
+Reportes
+
+GET /api/reports/summary
+
+Parámetros query: date_from (opcional), date_to (opcional), period (opcional: month, quarter, semester, year), currency (opcional, para conversión)
+Respuesta: {"monthly_revenue_expenses": [], "client_revenue": [], "expense_categories": [], "cash_flow_trend": []}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/reports/statement
+
+Parámetros query: date_from (opcional), date_to (opcional), currency (opcional, para conversión)
+Respuesta: {"period": string, "incomes": object, "expenses": object, "gross_profit": numeric, "taxes": numeric, "net_profit": numeric}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/reports/indicators
+
+Parámetros query: currency (opcional, para conversión)
+Respuesta: {"profit_margin": numeric, "marketing_roi": numeric, "available_cash": numeric, "monthly_burn_rate": numeric, "months_covered": numeric, "trend_data": []}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+GET /api/reports/clients
+
+Parámetros query: timeframe (opcional: month, quarter, ytd, year), currency (opcional, para conversión)
+Respuesta: {"client_profitability": [], "growing_clients": [], "declining_clients": [], "mrr_changes": object}
+Códigos: 200 (éxito), 401 (no autorizado)
+
+
+
+Archivos
+
+GET /api/files/{id}
+
+Respuesta: Archivo binario con headers Content-Type apropiados
+Códigos: 200 (éxito), 404 (no encontrado), 401 (no autorizado)
+
+
+POST /api/upload
+
+Cuerpo: Multipart form con file
+Respuesta: {"file_path": string, "file_url": string}
+Códigos: 201 (creado), 400 (archivo inválido), 401 (no autorizado)
+
+
+
+Servicios (lógica de negocio)
+Implementa los siguientes servicios para manejar la lógica de negocio:
+
+AuthService:
+
+Autenticación de usuarios
+Generación y validación de tokens JWT
+Gestión de permisos
+
+
+ClientService:
+
+CRUD para clientes
+Gestión de documentos de clientes
+
+
+ProjectService:
+
+CRUD para proyectos
+Gestión de documentos de proyectos
+Métodos para filtrar proyectos por cliente, estado, etc.
+
+
+PaymentService:
+
+CRUD para pagos
+Métodos para generar pagos automáticamente basados en planes de pago
+Actualización automática de estados (pendiente → vencido)
+Cálculo de ingresos por cliente, proyecto, etc.
+
+
+IncomeService:
+
+CRUD para ingresos
+Análisis de ingresos por período, tipo, etc.
+
+
+ExpenseService:
+
+CRUD para gastos variables, recurrentes y causados
+Generación automática de gastos causados a partir de recurrentes
+Análisis de gastos por categoría, período, etc.
+
+
+CashFlowService:
+
+Consolidación de movimientos (ingresos y gastos)
+Cálculo de métricas financieras:
+
+Burn rate
+Runway
+Fecha de quiebre
+Balances
+
+
+
+
+ReportService:
+
+Generación de reportes financieros
+Estado de resultados
+Análisis de indicadores
+
+
+CurrencyService:
+
+Conversión entre monedas (COP ↔ USD)
+Cálculos con múltiples monedas
+
+
+FileService:
+
+Gestión de archivos (carga, descarga, eliminación)
+Validación de tipos de archivo
+
+
+
+Tareas programadas
+Implementa las siguientes tareas programadas usando Flask-APScheduler:
+
+Actualización de estados de pagos:
+
+Frecuencia: Diaria
+Acción: Marcar como vencidos los pagos pendientes cuya fecha ya pasó
+
+
+Generación de pagos recurrentes:
+
+Frecuencia: Diaria
+Acción: Crear nuevos pagos basados en planes de pago recurrentes
+
+
+Generación de gastos causados:
+
+Frecuencia: Mensual
+Acción: Crear gastos causados a partir de gastos recurrentes activos
+
+
+
+Estructura del Proyecto
+Organiza el proyecto siguiendo principios de Clean Architecture
