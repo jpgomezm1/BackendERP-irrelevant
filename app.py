@@ -88,6 +88,11 @@ def create_app(config_object='config.DevelopmentConfig'):
     api.add_namespace(expenses_ns)
     api.add_namespace(reports_ns)
     
+    # Register home route to redirect to API docs
+    @app.route('/')
+    def home():
+        return {'message': 'Welcome to Control Fresco API. Visit /api/docs for API documentation.'}
+    
     # Register error handlers
     @app.errorhandler(404)
     def not_found(error):
