@@ -1,0 +1,2613 @@
+{
+    "swagger": "2.0",
+    "basePath": "/",
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "200": {
+                        "description": "Login successful",
+                        "schema": {
+                            "$ref": "#/definitions/Token"
+                        }
+                    }
+                },
+                "summary": "User login endpoint",
+                "operationId": "post_login",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Login"
+                        }
+                    }
+                ],
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Logout successful"
+                    }
+                },
+                "summary": "Logout endpoint - blacklist current token",
+                "operationId": "post_logout",
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "Invalid token"
+                    },
+                    "200": {
+                        "description": "Token refreshed successfully"
+                    }
+                },
+                "summary": "Refresh access token",
+                "operationId": "post_token_refresh",
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "User registered successfully"
+                    }
+                },
+                "summary": "Register a new user (admin access may be restricted in production)",
+                "operationId": "post_register",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Register"
+                        }
+                    }
+                ],
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/clients": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "Client created successfully"
+                    }
+                },
+                "summary": "Create a new client",
+                "operationId": "post_client_list",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Client"
+                        }
+                    }
+                ],
+                "tags": [
+                    "clients"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all clients with optional filtering and pagination",
+                "operationId": "get_client_list",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by status"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Sort field"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "clients"
+                ]
+            }
+        },
+        "/clients/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Client not found"
+                    },
+                    "200": {
+                        "description": "Client updated successfully"
+                    }
+                },
+                "summary": "Update a client",
+                "operationId": "put_client_detail",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Client"
+                        }
+                    }
+                ],
+                "tags": [
+                    "clients"
+                ]
+            },
+            "delete": {
+                "responses": {
+                    "409": {
+                        "description": "Client has projects and cannot be deleted"
+                    },
+                    "404": {
+                        "description": "Client not found"
+                    },
+                    "200": {
+                        "description": "Client deleted successfully"
+                    }
+                },
+                "summary": "Delete a client",
+                "operationId": "delete_client_detail",
+                "tags": [
+                    "clients"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Client not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get a client by ID",
+                "operationId": "get_client_detail",
+                "tags": [
+                    "clients"
+                ]
+            }
+        },
+        "/clients/{id}/documents": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "404": {
+                        "description": "Client not found"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "201": {
+                        "description": "Document uploaded successfully"
+                    }
+                },
+                "summary": "Upload a document for a client",
+                "operationId": "post_client_documents",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Document name"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Document type"
+                    },
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "type": "file",
+                        "required": true,
+                        "description": "Document file"
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "clients"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Client not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all documents for a client",
+                "operationId": "get_client_documents",
+                "tags": [
+                    "clients"
+                ]
+            }
+        },
+        "/documents": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "201": {
+                        "description": "Document uploaded successfully"
+                    }
+                },
+                "summary": "Upload a new document",
+                "operationId": "post_document_list",
+                "parameters": [
+                    {
+                        "name": "entity_type",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Entity type (client or project)"
+                    },
+                    {
+                        "name": "entity_id",
+                        "in": "query",
+                        "type": "integer",
+                        "required": true,
+                        "description": "Entity ID"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Document name"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Document type"
+                    },
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "type": "file",
+                        "required": true,
+                        "description": "Document file"
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "documents"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all documents with optional filtering and pagination",
+                "operationId": "get_document_list",
+                "parameters": [
+                    {
+                        "name": "entity_type",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by entity type"
+                    },
+                    {
+                        "name": "entity_id",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Filter by entity ID"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by document type"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "documents"
+                ]
+            }
+        },
+        "/documents/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "delete": {
+                "responses": {
+                    "400": {
+                        "description": "Error deleting document"
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    },
+                    "200": {
+                        "description": "Document deleted successfully"
+                    }
+                },
+                "summary": "Delete a document",
+                "operationId": "delete_document_detail",
+                "tags": [
+                    "documents"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Document not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get a document by ID",
+                "operationId": "get_document_detail",
+                "tags": [
+                    "documents"
+                ]
+            }
+        },
+        "/documents/{id}/download": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "400": {
+                        "description": "Error downloading document"
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Download a document",
+                "operationId": "get_document_download",
+                "tags": [
+                    "documents"
+                ]
+            }
+        },
+        "/expenses": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "Expense created successfully"
+                    }
+                },
+                "summary": "Create a new expense",
+                "operationId": "post_expense_list",
+                "parameters": [
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Expense description"
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Expense date (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "type": "number",
+                        "required": true,
+                        "description": "Expense amount"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Currency (COP or USD)"
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Expense category"
+                    },
+                    {
+                        "name": "payment_method",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Payment method"
+                    },
+                    {
+                        "name": "notes",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Additional notes"
+                    },
+                    {
+                        "name": "receipt",
+                        "in": "formData",
+                        "type": "file",
+                        "description": "Receipt file"
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all expenses with optional filtering and pagination",
+                "operationId": "get_expense_list",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by category"
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by date from (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by date to (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Sort field"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/accrued": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "Accrued expense created successfully"
+                    }
+                },
+                "summary": "Create a new accrued expense",
+                "operationId": "post_accrued_expense_list",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/AccruedExpense"
+                        }
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all accrued expenses with optional filtering and pagination",
+                "operationId": "get_accrued_expense_list",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by status"
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by category"
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by due date from (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by due date to (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "is_recurring",
+                        "in": "query",
+                        "type": "boolean",
+                        "description": "Filter by recurring flag"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/accrued/overdue": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get overdue accrued expenses",
+                "operationId": "get_overdue_accrued_expenses",
+                "parameters": [
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/accrued/upcoming": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get upcoming accrued expenses within specified days",
+                "operationId": "get_upcoming_accrued_expenses",
+                "parameters": [
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Number of days to look ahead",
+                        "default": 30
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/accrued/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Accrued expense not found"
+                    },
+                    "200": {
+                        "description": "Accrued expense updated successfully"
+                    }
+                },
+                "summary": "Update an accrued expense",
+                "operationId": "put_accrued_expense_detail",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/AccruedExpense"
+                        }
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "delete": {
+                "responses": {
+                    "404": {
+                        "description": "Accrued expense not found"
+                    },
+                    "200": {
+                        "description": "Accrued expense deleted successfully"
+                    }
+                },
+                "summary": "Delete an accrued expense",
+                "operationId": "delete_accrued_expense_detail",
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Accrued expense not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get an accrued expense by ID",
+                "operationId": "get_accrued_expense_detail",
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/categories": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all expense categories with their totals",
+                "operationId": "get_expense_categories",
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/recurring": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "Recurring expense created successfully"
+                    }
+                },
+                "summary": "Create a new recurring expense",
+                "operationId": "post_recurring_expense_list",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/RecurringExpense"
+                        }
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all recurring expenses with optional filtering and pagination",
+                "operationId": "get_recurring_expense_list",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by status"
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by category"
+                    },
+                    {
+                        "name": "frequency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by frequency"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/recurring/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Recurring expense not found"
+                    },
+                    "200": {
+                        "description": "Recurring expense updated successfully"
+                    }
+                },
+                "summary": "Update a recurring expense",
+                "operationId": "put_recurring_expense_detail",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/RecurringExpense"
+                        }
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "delete": {
+                "responses": {
+                    "409": {
+                        "description": "Cannot delete recurring expense with associated accrued expenses"
+                    },
+                    "404": {
+                        "description": "Recurring expense not found"
+                    },
+                    "200": {
+                        "description": "Recurring expense deleted successfully"
+                    }
+                },
+                "summary": "Delete a recurring expense",
+                "operationId": "delete_recurring_expense_detail",
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Recurring expense not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get a recurring expense by ID",
+                "operationId": "get_recurring_expense_detail",
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/recurring/{id}/generate": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Error generating accrued expenses"
+                    },
+                    "404": {
+                        "description": "Recurring expense not found"
+                    },
+                    "201": {
+                        "description": "Accrued expenses generated successfully"
+                    }
+                },
+                "summary": "Generate accrued expenses for a recurring expense",
+                "operationId": "post_generate_accrued_expenses",
+                "parameters": [
+                    {
+                        "name": "months",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Number of months to generate",
+                        "default": 3
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/expenses/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Expense not found"
+                    },
+                    "200": {
+                        "description": "Expense updated successfully"
+                    }
+                },
+                "summary": "Update an expense",
+                "operationId": "put_expense_detail",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Expense"
+                        }
+                    }
+                ],
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "delete": {
+                "responses": {
+                    "400": {
+                        "description": "Error deleting expense"
+                    },
+                    "404": {
+                        "description": "Expense not found"
+                    },
+                    "200": {
+                        "description": "Expense deleted successfully"
+                    }
+                },
+                "summary": "Delete an expense",
+                "operationId": "delete_expense_detail",
+                "tags": [
+                    "expenses"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Expense not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get an expense by ID",
+                "operationId": "get_expense_detail",
+                "tags": [
+                    "expenses"
+                ]
+            }
+        },
+        "/incomes": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "Income created successfully"
+                    }
+                },
+                "summary": "Create a new income",
+                "operationId": "post_income_list",
+                "parameters": [
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Income description"
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Income date (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "type": "number",
+                        "required": true,
+                        "description": "Income amount"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Currency (COP or USD)"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Income type"
+                    },
+                    {
+                        "name": "client",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Client name"
+                    },
+                    {
+                        "name": "payment_method",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Payment method"
+                    },
+                    {
+                        "name": "notes",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Additional notes"
+                    },
+                    {
+                        "name": "receipt",
+                        "in": "formData",
+                        "type": "file",
+                        "description": "Receipt file"
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "incomes"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all incomes with optional filtering and pagination",
+                "operationId": "get_income_list",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by income type"
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by date from (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by date to (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Sort field"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "incomes"
+                ]
+            }
+        },
+        "/incomes/analysis": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get income analysis data",
+                "operationId": "get_income_analysis",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Analysis period (month, quarter, year)",
+                        "default": "month"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    }
+                ],
+                "tags": [
+                    "incomes"
+                ]
+            }
+        },
+        "/incomes/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Income not found"
+                    },
+                    "200": {
+                        "description": "Income updated successfully"
+                    }
+                },
+                "summary": "Update an income",
+                "operationId": "put_income_detail",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Income"
+                        }
+                    }
+                ],
+                "tags": [
+                    "incomes"
+                ]
+            },
+            "delete": {
+                "responses": {
+                    "400": {
+                        "description": "Error deleting income"
+                    },
+                    "404": {
+                        "description": "Income not found"
+                    },
+                    "200": {
+                        "description": "Income deleted successfully"
+                    }
+                },
+                "summary": "Delete an income",
+                "operationId": "delete_income_detail",
+                "tags": [
+                    "incomes"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Income not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get an income by ID",
+                "operationId": "get_income_detail",
+                "tags": [
+                    "incomes"
+                ]
+            }
+        },
+        "/payments": {
+            "post": {
+                "responses": {
+                    "404": {
+                        "description": "Project or client not found"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "Payment created successfully"
+                    }
+                },
+                "summary": "Create a new payment",
+                "operationId": "post_payment_list",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Payment"
+                        }
+                    }
+                ],
+                "tags": [
+                    "payments"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all payments with optional filtering and pagination",
+                "operationId": "get_payment_list",
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Filter by project ID"
+                    },
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Filter by client ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by status"
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by date from (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by date to (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Sort field",
+                        "default": "date"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/payments/generate": {
+            "post": {
+                "responses": {
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "201": {
+                        "description": "Payments generated successfully"
+                    }
+                },
+                "summary": "Generate payments for a project based on its payment plan",
+                "operationId": "post_generate_payments",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/GeneratePayments"
+                        }
+                    }
+                ],
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/payments/overdue": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get overdue payments",
+                "operationId": "get_overdue_payments",
+                "parameters": [
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    }
+                ],
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/payments/upcoming": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get upcoming payments within specified days",
+                "operationId": "get_upcoming_payments",
+                "parameters": [
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Number of days to look ahead",
+                        "default": 30
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for conversion"
+                    }
+                ],
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/payments/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Payment not found"
+                    },
+                    "200": {
+                        "description": "Payment updated successfully"
+                    }
+                },
+                "summary": "Update a payment",
+                "operationId": "put_payment_detail",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Payment"
+                        }
+                    }
+                ],
+                "tags": [
+                    "payments"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Payment not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get a payment by ID",
+                "operationId": "get_payment_detail",
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/payments/{id}/status": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "patch": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Payment not found"
+                    },
+                    "200": {
+                        "description": "Payment status updated successfully"
+                    }
+                },
+                "summary": "Update payment status",
+                "operationId": "patch_payment_status_update",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PaymentStatusUpdate"
+                        }
+                    }
+                ],
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/projects": {
+            "post": {
+                "responses": {
+                    "404": {
+                        "description": "Client not found"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "201": {
+                        "description": "Project created successfully"
+                    }
+                },
+                "summary": "Create a new project with payment plan",
+                "operationId": "post_project_list",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Project"
+                        }
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all projects with optional filtering and pagination",
+                "operationId": "get_project_list",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Filter by client ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Filter by status"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Sort field"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Items per page"
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ]
+            }
+        },
+        "/projects/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "200": {
+                        "description": "Project updated successfully"
+                    }
+                },
+                "summary": "Update a project",
+                "operationId": "put_project_detail",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Project"
+                        }
+                    }
+                ],
+                "tags": [
+                    "projects"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get a project by ID",
+                "operationId": "get_project_detail",
+                "tags": [
+                    "projects"
+                ]
+            }
+        },
+        "/projects/{id}/documents": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "201": {
+                        "description": "Document uploaded successfully"
+                    }
+                },
+                "summary": "Upload a document for a project",
+                "operationId": "post_project_documents",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Document name"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Document type"
+                    },
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "type": "file",
+                        "required": true,
+                        "description": "Document file"
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "projects"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Get all documents for a project",
+                "operationId": "get_project_documents",
+                "tags": [
+                    "projects"
+                ]
+            }
+        },
+        "/reports/cash-flow": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Generate cash flow report",
+                "operationId": "get_cash_flow_report",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Period for analysis (month, quarter, year)",
+                        "default": "month"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for calculations (COP, USD)",
+                        "default": "COP"
+                    },
+                    {
+                        "name": "months",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Number of months to include",
+                        "default": 12
+                    }
+                ],
+                "tags": [
+                    "reports"
+                ]
+            }
+        },
+        "/reports/client-analytics": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Generate client analytics report",
+                "operationId": "get_client_analytics_report",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Filter by client ID"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for calculations (COP, USD)",
+                        "default": "COP"
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Filter by year"
+                    }
+                ],
+                "tags": [
+                    "reports"
+                ]
+            }
+        },
+        "/reports/dashboard": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Generate dashboard summary data",
+                "operationId": "get_dashboard_report",
+                "parameters": [
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "default": "COP"
+                    }
+                ],
+                "tags": [
+                    "reports"
+                ]
+            }
+        },
+        "/reports/financial-projection": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Generate financial projection report",
+                "operationId": "get_financial_projection_report",
+                "parameters": [
+                    {
+                        "name": "months",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Number of months to project",
+                        "default": 12
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for calculations (COP, USD)",
+                        "default": "COP"
+                    }
+                ],
+                "tags": [
+                    "reports"
+                ]
+            }
+        },
+        "/reports/profitability": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "Generate profitability report",
+                "operationId": "get_profitability_report",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Period for analysis (month, quarter, year)",
+                        "default": "month"
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Currency for calculations (COP, USD)",
+                        "default": "COP"
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "type": "integer",
+                        "description": "Filter by year"
+                    }
+                ],
+                "tags": [
+                    "reports"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "Control Fresco API",
+        "version": "1.0",
+        "description": "Financial management application API"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization",
+            "description": "Type in the *'Value'* input box below: **'Bearer &lt;JWT&gt;'**, where JWT is the token"
+        }
+    },
+    "security": [
+        {
+            "jwt": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Authentication operations"
+        },
+        {
+            "name": "clients",
+            "description": "Client operations"
+        },
+        {
+            "name": "projects",
+            "description": "Project operations"
+        },
+        {
+            "name": "payments",
+            "description": "Payment operations"
+        },
+        {
+            "name": "documents",
+            "description": "Document operations"
+        },
+        {
+            "name": "incomes",
+            "description": "Income operations"
+        },
+        {
+            "name": "expenses",
+            "description": "Expense operations"
+        },
+        {
+            "name": "reports",
+            "description": "Financial reports and analytics"
+        }
+    ],
+    "definitions": {
+        "Login": {
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "Username"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "Password"
+                }
+            },
+            "type": "object"
+        },
+        "Token": {
+            "properties": {
+                "access_token": {
+                    "type": "string",
+                    "description": "JWT access token"
+                },
+                "refresh_token": {
+                    "type": "string",
+                    "description": "JWT refresh token"
+                },
+                "user": {
+                    "type": "object",
+                    "description": "User data"
+                }
+            },
+            "type": "object"
+        },
+        "Register": {
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "Username"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Email"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "Password"
+                },
+                "role": {
+                    "type": "string",
+                    "description": "Role (admin or user)"
+                }
+            },
+            "type": "object"
+        },
+        "Client": {
+            "required": [
+                "name",
+                "start_date",
+                "status"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Client name"
+                },
+                "contact_name": {
+                    "type": "string",
+                    "description": "Contact person name"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Client email"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Client phone number"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "Client address"
+                },
+                "tax_id": {
+                    "type": "string",
+                    "description": "Tax ID (NIT)"
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Client start date"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Client status",
+                    "example": "Activo",
+                    "enum": [
+                        "Activo",
+                        "Pausado",
+                        "Terminado"
+                    ]
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Additional notes"
+                }
+            },
+            "type": "object"
+        },
+        "Project": {
+            "required": [
+                "client_id",
+                "description",
+                "name",
+                "start_date"
+            ],
+            "properties": {
+                "client_id": {
+                    "type": "integer",
+                    "description": "Client ID"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Project name"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Project description"
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Project start date"
+                },
+                "end_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Project end date"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Project status",
+                    "example": "Activo",
+                    "enum": [
+                        "Activo",
+                        "Pausado",
+                        "Finalizado",
+                        "Cancelado"
+                    ]
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Additional notes"
+                },
+                "payment_plan": {
+                    "description": "Payment plan",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PaymentPlan"
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PaymentPlan": {
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Plan type",
+                    "example": "Fee \u00fanico",
+                    "enum": [
+                        "Fee \u00fanico",
+                        "Fee por cuotas",
+                        "Suscripci\u00f3n peri\u00f3dica",
+                        "Mixto"
+                    ]
+                },
+                "implementation_fee_total": {
+                    "type": "number",
+                    "description": "Implementation fee total"
+                },
+                "implementation_fee_currency": {
+                    "type": "string",
+                    "description": "Implementation fee currency",
+                    "example": "COP",
+                    "enum": [
+                        "COP",
+                        "USD"
+                    ]
+                },
+                "implementation_fee_installments": {
+                    "type": "integer",
+                    "description": "Implementation fee installments",
+                    "default": 1
+                },
+                "recurring_fee_amount": {
+                    "type": "number",
+                    "description": "Recurring fee amount"
+                },
+                "recurring_fee_currency": {
+                    "type": "string",
+                    "description": "Recurring fee currency",
+                    "example": "COP",
+                    "enum": [
+                        "COP",
+                        "USD"
+                    ]
+                },
+                "recurring_fee_frequency": {
+                    "type": "string",
+                    "description": "Recurring fee frequency",
+                    "example": "Semanal",
+                    "enum": [
+                        "Semanal",
+                        "Quincenal",
+                        "Mensual",
+                        "Bimensual",
+                        "Trimestral",
+                        "Semestral",
+                        "Anual"
+                    ]
+                },
+                "recurring_fee_day_of_charge": {
+                    "type": "integer",
+                    "description": "Recurring fee day of charge"
+                },
+                "recurring_fee_grace_periods": {
+                    "type": "integer",
+                    "description": "Recurring fee grace periods",
+                    "default": 0
+                },
+                "recurring_fee_discount_periods": {
+                    "type": "integer",
+                    "description": "Recurring fee discount periods",
+                    "default": 0
+                },
+                "recurring_fee_discount_percentage": {
+                    "type": "number",
+                    "description": "Recurring fee discount percentage",
+                    "default": 0
+                }
+            },
+            "type": "object"
+        },
+        "Payment": {
+            "required": [
+                "amount",
+                "client_id",
+                "currency",
+                "date",
+                "project_id",
+                "type"
+            ],
+            "properties": {
+                "project_id": {
+                    "type": "integer",
+                    "description": "Project ID"
+                },
+                "client_id": {
+                    "type": "integer",
+                    "description": "Client ID"
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "Payment amount"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency",
+                    "example": "COP",
+                    "enum": [
+                        "COP",
+                        "USD"
+                    ]
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Scheduled payment date"
+                },
+                "paid_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Actual payment date"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Payment status",
+                    "example": "Pagado",
+                    "enum": [
+                        "Pagado",
+                        "Pendiente",
+                        "Vencido"
+                    ]
+                },
+                "invoice_number": {
+                    "type": "string",
+                    "description": "Invoice number"
+                },
+                "invoice_url": {
+                    "type": "string",
+                    "description": "Invoice URL"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Payment type",
+                    "example": "Implementaci\u00f3n",
+                    "enum": [
+                        "Implementaci\u00f3n",
+                        "Recurrente"
+                    ]
+                },
+                "installment_number": {
+                    "type": "integer",
+                    "description": "Installment number for implementation payments"
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Additional notes"
+                }
+            },
+            "type": "object"
+        },
+        "PaymentStatusUpdate": {
+            "required": [
+                "paid_date",
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "New payment status",
+                    "example": "Pagado",
+                    "enum": [
+                        "Pagado",
+                        "Pendiente",
+                        "Vencido"
+                    ]
+                },
+                "paid_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Actual payment date"
+                },
+                "invoice_number": {
+                    "type": "string",
+                    "description": "Invoice number"
+                }
+            },
+            "type": "object"
+        },
+        "GeneratePayments": {
+            "required": [
+                "project_id"
+            ],
+            "properties": {
+                "project_id": {
+                    "type": "integer",
+                    "description": "Project ID"
+                },
+                "months": {
+                    "type": "integer",
+                    "description": "Number of months to generate payments for",
+                    "default": 12
+                }
+            },
+            "type": "object"
+        },
+        "Income": {
+            "required": [
+                "amount",
+                "currency",
+                "date",
+                "description",
+                "payment_method",
+                "type"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Income description"
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Income date"
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "Income amount"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency",
+                    "example": "COP",
+                    "enum": [
+                        "COP",
+                        "USD"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Income type"
+                },
+                "client": {
+                    "type": "string",
+                    "description": "Client name"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "description": "Payment method"
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Additional notes"
+                }
+            },
+            "type": "object"
+        },
+        "Expense": {
+            "required": [
+                "amount",
+                "category",
+                "currency",
+                "date",
+                "description",
+                "payment_method"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Expense description"
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Expense date"
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "Expense amount"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency",
+                    "example": "COP",
+                    "enum": [
+                        "COP",
+                        "USD"
+                    ]
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Expense category"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "description": "Payment method"
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Additional notes"
+                }
+            },
+            "type": "object"
+        },
+        "RecurringExpense": {
+            "required": [
+                "amount",
+                "category",
+                "currency",
+                "description",
+                "frequency",
+                "payment_method",
+                "start_date"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Expense description"
+                },
+                "frequency": {
+                    "type": "string",
+                    "description": "Frequency",
+                    "example": "Diaria",
+                    "enum": [
+                        "Diaria",
+                        "Semanal",
+                        "Quincenal",
+                        "Mensual",
+                        "Bimensual",
+                        "Trimestral",
+                        "Semestral",
+                        "Anual"
+                    ]
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Start date"
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "Expense amount"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency",
+                    "example": "COP",
+                    "enum": [
+                        "COP",
+                        "USD"
+                    ]
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Expense category"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "description": "Payment method"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status",
+                    "example": "Activo",
+                    "enum": [
+                        "Activo",
+                        "Pausado"
+                    ]
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Additional notes"
+                }
+            },
+            "type": "object"
+        },
+        "AccruedExpense": {
+            "required": [
+                "amount",
+                "category",
+                "currency",
+                "description",
+                "due_date",
+                "payment_method"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Expense description"
+                },
+                "due_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Due date"
+                },
+                "amount": {
+                    "type": "number",
+                    "description": "Expense amount"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency",
+                    "example": "COP",
+                    "enum": [
+                        "COP",
+                        "USD"
+                    ]
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Expense category"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "description": "Payment method"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status",
+                    "example": "pagado",
+                    "enum": [
+                        "pagado",
+                        "pendiente",
+                        "vencido"
+                    ]
+                },
+                "is_recurring": {
+                    "type": "boolean",
+                    "description": "Is from recurring expense"
+                },
+                "recurring_id": {
+                    "type": "integer",
+                    "description": "Recurring expense ID"
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Additional notes"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "responses": {
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        }
+    }
+}
